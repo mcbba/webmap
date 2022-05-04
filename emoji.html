@@ -23,11 +23,33 @@ canvas {
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
+    #theo{
+      font-size: 60px;
+  margin: 0;
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+      color: white;
+}
+        #ada{
+          font-size: 60px;
+  margin: 0;
+  position: absolute;
+  top: 90%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+      color: white;
+}
   </style>
 <body style="background-color:white">
   
     <script src="https://cdn.jsdelivr.net/npm/js-confetti@0.9.0/dist/js-confetti.browser.js"></script>
     <button id="button">Click me!</button>
+  <h1 id="theo">THEO!!!!!!</h1>
+    <h1 id="ada">ADA!!!!!!</h1>
     <canvas id="custom_canvas"></canvas>
   
 </body>
@@ -45,7 +67,13 @@ jsConfetti.addConfetti({
 })
 const setBg = () => {
   const randomColor = Math.floor(Math.random()*16777215).toString(16);
+  const randomColor2 = Math.floor(Math.random()*16777215).toString(16);
+  const randomColor3 = Math.floor(Math.random()*16777215).toString(16);
+  const randomColor4 = Math.floor(Math.random()*16777215).toString(16);
   document.body.style.backgroundColor = "#" + randomColor;
+  document.getElementById("button").style.backgroundColor = "#" + randomColor2;
+  document.getElementById("theo").style.color = "#" + randomColor3;
+    document.getElementById("ada").style.color = "#" + randomColor4;
 }
 button.addEventListener("click", setBg);
   </script>
