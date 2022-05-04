@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JS Bin</title>
+</head>
+  <style>
+    button {
+  margin-bottom: 10px;
+  display: block;
+}
+
+canvas {
+  width: 95vw;
+  height: 100vh;
+}
+#button{
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+  </style>
+<body style="background-color:white">
+  
+    <script src="https://cdn.jsdelivr.net/npm/js-confetti@0.9.0/dist/js-confetti.browser.js"></script>
+    <button id="button">Click me!</button>
+    <canvas id="custom_canvas"></canvas>
+  
+</body>
+  <script>
+const canvas = document.getElementById('custom_canvas')
+const button = document.getElementById('button')
+
+const jsConfetti = new JSConfetti({ canvas })
+
+button.addEventListener('click', () => {
+jsConfetti.addConfetti({
+   emojis: ['🌈', '⚡️', '💥', '✨', '🐈',
+            '🦖'],
+})
+})
+const setBg = () => {
+  const randomColor = Math.floor(Math.random()*16777215).toString(16);
+  document.body.style.backgroundColor = "#" + randomColor;
+}
+button.addEventListener("click", setBg);
+  </script>
+</html>
