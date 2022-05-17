@@ -98,8 +98,8 @@
         const layer = new FeatureLayer({
           url: "https://gis.marinpublic.com/arcgis/rest/services/MarinMap2/Open_Data_Download/MapServer/35",
           popupTemplate: {
-                title: "{PropID}",
-                content: "<b>{PropID}</b> <i>{UseCdDesc}</i>"
+                title: "{UseCdDesc}",
+                content: "<b>{PropID}</b>"
               },
               renderer: renderer2
         });
