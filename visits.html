@@ -103,9 +103,9 @@ var chart = new Chartist.Line('#line-chart', {
                 this.setTime(this.getTime() - (d*24*60*60*1000)); 
                 return this; 
             }
-                var a = new Date();
-                console.log(a);
-                a.setDate(a.getDate() - ((a.getDay() + 6) % 7)+7);
+                var a = new Date("Tue Jul 26 2022 18:37:46 GMT-0600 (Mountain Daylight Time)");
+//                 console.log(a);
+                a.setDate(a.getDate() - (a.getDay() + 6) % 7);
                 var b = a.subtractDays(Math.abs(value*7));
                 //return b.toLocaleDateString();
                 return b.toLocaleString(undefined, {month: "numeric", day: "numeric"});
