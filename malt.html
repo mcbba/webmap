@@ -1,0 +1,154 @@
+<html>
+  <head>
+        <!-- this page was hand written by William Wiskes for MCBBA and is published under the MIT License -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <link rel="icon" type="image/png" href="./favicon.png"> 
+    <title>Parcels</title>
+
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+      #layerToggle {
+        top: 20px;
+        right: 20px;
+        position: absolute;
+        z-index: 99;
+        background-color: white;
+        border-radius: 8px;
+        padding: 10px;
+        opacity: 0.75;
+      }
+      .button {
+        background-color: inherit;
+        border: none;
+      }
+      .button:hover {
+        background-color: #d0d0d0; 
+        cursor: pointer;
+      }
+    </style>
+
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.23/esri/themes/light/main.css"
+    />
+    <script src="https://js.arcgis.com/4.23/"></script>
+
+    <script>
+      require(["esri/Map", "esri/layers/GeoJSONLayer", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/widgets/BasemapToggle", "esri/widgets/ScaleBar"], (
+        Map,
+        GeoJSONLayer,
+        MapView,
+        FeatureLayer,
+        BasemapToggle,
+        ScaleBar
+      ) => {
+
+        const url =
+          "https://raw.githubusercontent.com/wwiskes/datadump/main/mcbba.geojson";
+
+        const renderer = {
+          type: "simple",
+          symbol: {
+            type: "simple-line",
+            color: "black"
+          }
+        };
+        const labelClass = {
+            symbol: {
+              type: "text",  
+              color: "black",
+              font: {  
+                size: 12,
+                weight: "bold"
+              }
+            },
+            labelExpressionInfo: {
+              expression: "$feature.name"
+            }
+          };
+        const geojsonLayer = new GeoJSONLayer({
+          url: url,
+          copyright: "William Wiskes",
+          labelingInfo: labelClass,
+          renderer: renderer
+        });
+
+        let renderer2 = {
+            type: "simple",  
+            symbol: {
+              type: "simple-fill", 
+              color: [ 255, 128, 0, 0 ],
+              outline: {  
+                width: 1,
+                color: "red"
+              }
+            }
+          };
+
+        const layer = new FeatureLayer({
+          url: "https://gis.marinpublic.com/arcgis/rest/services/MarinMap2/Open_Data_Download/MapServer/35",
+          popupTemplate: {
+                title: "{UseCdDesc}",
+                content: "<b>{PropID}</b>"
+              },
+              renderer: renderer2
+        });
+
+        const map = new Map({
+          basemap: "osm",
+          layers: [layer, geojsonLayer]
+        });
+
+        const view = new MapView({
+          container: "viewDiv",
+          center: [-122.74, 38.06],
+          zoom: 11,
+          map: map
+        });
+
+        const toggle = new BasemapToggle({
+          view: view, 
+          nextBasemap: "hybrid" 
+        });
+
+        view.ui.add(toggle, "bottom-left");
+
+        const scaleBar = new ScaleBar({
+          view: view,
+          unit: "dual" 
+        });
+
+        view.ui.add(scaleBar, {
+          position: "bottom-right"
+        });
+});
+
+    </script>
+  </head>
+
+  <body>
+    <div id="viewDiv"></div>
+    <span id="layerToggle" class="esri-widget"> Zoom to a block to see parcels <button class="button" onclick="myFunction()"><b>&#10005;</b></button></span>
+    <script>
+      function myFunction() {
+        var x = document.getElementById("layerToggle");
+        if (x.style.display === "none") {
+          x.style.display = "block";
+        } else {
+          x.style.display = "none";
+        }
+      }
+      </script>
+  </body>
+</html>
