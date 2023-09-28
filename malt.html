@@ -7,7 +7,7 @@
       content="initial-scale=1,maximum-scale=1,user-scalable=no"
     />
     <link rel="icon" type="image/png" href="./favicon.png"> 
-    <title>Parcels</title>
+    <title>Malt</title>
 
     <style>
       html,
@@ -97,7 +97,7 @@
           };
 
         const layer = new FeatureLayer({
-          url: "https://gis.marinpublic.com/arcgis/rest/services/MarinMap2/Open_Data_Download/MapServer/35",
+          url: "https://services9.arcgis.com/mt4kvYhNXSa5AqLG/arcgis/rest/services/MALT_Protected_Lands_WFL1/FeatureServer/1",
           popupTemplate: {
                 title: "{UseCdDesc}",
                 content: "<b>{PropID}</b>"
@@ -139,7 +139,7 @@
 
   <body>
     <div id="viewDiv"></div>
-    <span id="layerToggle" class="esri-widget"> Zoom to a block to see parcels <button class="button" onclick="myFunction()"><b>&#10005;</b></button></span>
+    <span id="layerToggle" class="esri-widget"> Zoom to a block to see Malt <button class="button" onclick="myFunction()"><b>&#10005;</b></button></span>
     <script>
       function myFunction() {
         var x = document.getElementById("layerToggle");
