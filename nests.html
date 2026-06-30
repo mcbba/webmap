@@ -1,0 +1,247 @@
+<html>
+  <head>
+    <!-- this page was hand written by William Wiskes for MCBBA and is published under the MIT License -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+      <link rel="icon" type="image/png" href="./favicon.png"> 
+    <title>Habitat</title>
+
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+
+      #layerToggle {
+        top: 20px;
+        right: 20px;
+        position: absolute;
+        z-index: 99;
+        background-color: white;
+        border-radius: 8px;
+        padding: 10px;
+        opacity: 0.75;
+      }
+
+      #speciesFilter {
+        top: 15px;
+        left: 70px;
+        position: absolute;
+        z-index: 99;
+        background-color: white;
+        border-radius: 8px;
+        padding: 10px;
+        opacity: 0.75;
+      }
+
+      #speciesDropdown {
+        padding: 5px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+      }
+    </style>
+
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.23/esri/themes/light/main.css"
+    />
+    <script src="https://js.arcgis.com/4.23/"></script>
+
+    <script>
+      require(["esri/Map", "esri/layers/GeoJSONLayer", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/layers/CSVLayer", "esri/widgets/BasemapToggle", "esri/widgets/ScaleBar"], (
+        Map,
+        GeoJSONLayer,
+        MapView,
+        FeatureLayer,
+        CSVLayer,
+        BasemapToggle,
+        ScaleBar
+      ) => {
+
+        const url =
+          "https://raw.githubusercontent.com/wwiskes/datadump/main/mcbba.geojson";
+
+        const renderer = {
+          type: "simple",
+          symbol: {
+            type: "simple-line",
+            color: "black"
+          }
+        };
+        const labelClass = {
+            symbol: {
+              type: "text",  
+              color: "black",
+              font: {  
+                size: 12,
+                weight: "bold"
+              }
+            },
+            labelExpressionInfo: {
+              expression: "$feature.name"
+            }
+          };
+        const geojsonLayer = new GeoJSONLayer({
+          url: url,
+          copyright: "William Wiskes",
+          labelingInfo: labelClass,
+          renderer: renderer
+        });
+
+        const habitatLayer = new FeatureLayer({
+          //url: "https://services5.arcgis.com/tdQLEzq0fgVElWN3/arcgis/rest/services/Marin_Finescale_Veg_Map/FeatureServer",
+          url: "https://services5.arcgis.com/tdQLEzq0fgVElWN3/arcgis/rest/services/Marin_Finescale_Veg_Map/FeatureServer/0",
+          id: "habitatLayer",
+          popupTemplate: {
+                title: "{FOREST_LIFEFORM_18}",
+                content: "{MAP_CLASS_18}"
+              }
+        });
+
+        const nestsCsvLayer = new CSVLayer({
+          url: "nests.csv",
+          title: "Nest observations",
+          copyright: "William Wiskes",
+          popupTemplate: {
+            title: "{Species}",
+            content: [{
+              type: "fields",
+              fieldInfos: [
+                { fieldName: "Count", label: "Count" },
+                { fieldName: "SPCode", label: "Species code" },
+                { fieldName: "Observation", label: "Observation" },
+                { fieldName: "Researcher", label: "Researcher" },
+                { fieldName: "Breeding", label: "Breeding" },
+                { fieldName: "BLOCK_Submitted", label: "Block" },
+                { fieldName: "Status", label: "Status" }
+              ]
+            }]
+          },
+          featureReduction: {
+            type: "cluster",
+            clusterRadius: "80px",
+            popupTemplate: {
+              title: "Cluster summary",
+              content: "This cluster contains {cluster_count} points."
+            }
+          },
+          renderer: {
+            type: "simple",
+            symbol: {
+              type: "simple-marker",
+              style: "circle",
+              color: "#1E90FF",
+              size: 10,
+              outline: {
+                color: "white",
+                width: 1
+              }
+            }
+          }
+        });
+
+        const map = new Map({
+          basemap: "osm",
+          layers: [habitatLayer, geojsonLayer, nestsCsvLayer]
+        });
+
+        const view = new MapView({
+          container: "viewDiv",
+          center: [-122.74, 38.06],
+          zoom: 11,
+          map: map
+        });
+
+        const toggle = new BasemapToggle({
+          view: view,
+          nextBasemap: "hybrid"
+        });
+
+        view.ui.add(toggle, "bottom-left");
+
+        const habitatToggle = document.getElementById("habitatLayerToggle");
+        habitatToggle.addEventListener("change", () => {
+          habitatLayer.visible = habitatToggle.checked;
+        });
+
+        const nestsToggle = document.getElementById("nestsLayerToggle");
+        nestsToggle.addEventListener("change", () => {
+          nestsCsvLayer.visible = nestsToggle.checked;
+        });
+
+        const speciesDropdown = document.getElementById("speciesDropdown");
+        speciesDropdown.addEventListener("change", () => {
+          const selectedSpecies = speciesDropdown.value;
+          if (selectedSpecies === "") {
+            nestsCsvLayer.definitionExpression = "";
+          } else {
+            nestsCsvLayer.definitionExpression = `Species = '${selectedSpecies}'`;
+          }
+        });
+
+        // Populate species dropdown from CSV layer
+        nestsCsvLayer.when(() => {
+          const query = nestsCsvLayer.createQuery();
+          query.outFields = ["Species"];
+          
+          nestsCsvLayer.queryFeatures(query).then((results) => {
+            const speciesSet = new Set();
+            results.features.forEach((feature) => {
+              if (feature.attributes && feature.attributes.Species) {
+                speciesSet.add(feature.attributes.Species);
+              }
+            });
+
+            const speciesList = Array.from(speciesSet).sort();
+            console.log("Found species:", speciesList);
+            speciesList.forEach((species) => {
+              const option = document.createElement("option");
+              option.value = species;
+              option.text = species;
+              speciesDropdown.appendChild(option);
+            });
+          }).catch((error) => {
+            console.error("Error querying species:", error);
+          });
+        });
+
+        const scaleBar = new ScaleBar({
+          view: view,
+          unit: "dual"
+        });
+
+        view.ui.add(scaleBar, {
+          position: "bottom-right"
+        });
+
+});
+
+    </script>
+  </head>
+
+  <body>
+    <div id="viewDiv"></div>
+    <span id="layerToggle" class="esri-widget">
+      <label style="cursor: pointer; display: block; margin-bottom: 4px;">
+        <input type="checkbox" id="habitatLayerToggle" checked /> Habitat
+      </label>
+      <label style="cursor: pointer; display: block;">
+        <input type="checkbox" id="nestsLayerToggle" checked /> Nest points
+      </label>
+    </span>
+    <div id="speciesFilter" class="esri-widget">
+      <label style="display: block; margin-bottom: 5px;">Filter by Species:</label>
+      <select id="speciesDropdown">
+        <option value="">All Species</option>
+      </select>
+    </div>
+  </body>
+</html>
