@@ -198,7 +198,7 @@
         }
 
        const escapedCode = String(selectedCode || "").replace(/'/g, "''");
-        const whereClause = escapedCode ? `SPCode = '${escapedCode}'` : "1=1";
+        const whereClause = escapedCode ? `Species = '${escapedCode}'` : "1=1";
         nestsLayerView.filter = { where: whereClause };
         console.log("Applied species filter:", whereClause);
       };
@@ -221,26 +221,22 @@
       // Populate species dropdown from CSV layer using SPCode values and Species labels
       nestsCsvLayer.when(() => {
         const query = nestsCsvLayer.createQuery();
-        query.outFields = ["Species", "SPCode"];
+        query.outFields = ["Species"];
         nestsCsvLayer.queryFeatures(query).then((results) => {
-          const speciesOptions = new Map();
+          const speciesSet = new Set();
           results.features.forEach((feature) => {
             const attrs = feature.attributes || {};
-            const spCode = attrs.SPCode;
             const species = attrs.Species;
-
-            if (spCode && species && !speciesOptions.has(String(spCode))) {
-              speciesOptions.set(String(spCode), species);
+            if (species) {
+              speciesSet.add(String(species).trim());
             }
           });
 
-          const speciesList = Array.from(speciesOptions.entries()).sort((a, b) =>
-            a[1].localeCompare(b[1])
-          );
+          const speciesList = Array.from(speciesSet).sort((a, b) => a.localeCompare(b));
           console.log("Found species options:", speciesList);
-          speciesList.forEach(([spCode, species]) => {
+          speciesList.forEach((species) => {
             const option = document.createElement("option");
-            option.value = spCode;
+            option.value = species;
             option.text = species;
             speciesDropdown.appendChild(option);
           });
