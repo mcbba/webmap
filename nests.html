@@ -124,19 +124,19 @@
         copyright: "William Wiskes",
         popupTemplate: {
           title: "{Species}",
-          content: [{
-            type: "fields",
-            fieldInfos: [
-              { fieldName: "Count", label: "Count" },
-              { fieldName: "SPCode", label: "Species code" },
-              { fieldName: "Species", label: "Species" },
-              { fieldName: "Observation", label: "Observation" },
-              { fieldName: "Researcher", label: "Researcher" },
-              { fieldName: "Breeding", label: "Breeding" },
-              { fieldName: "BLOCK_Submitted", label: "Block" },
-              { fieldName: "Status", label: "Status" }
-            ]
-          }]
+            content: [{
+              type: "fields",
+              fieldInfos: [
+                { fieldName: "Source", label: "Source" },
+                { fieldName: "Date", label: "Date" },
+                { fieldName: "Researcher", label: "Researcher" },
+                { fieldName: "Species", label: "Species" },
+                { fieldName: "Breeding", label: "Breeding" },
+                { fieldName: "Block", label: "Block" },
+                { fieldName: "Latitude", label: "Latitude" },
+                { fieldName: "Longitude", label: "Longitude" }
+              ]
+            }],
         },
         featureReduction: {
           type: "cluster",
